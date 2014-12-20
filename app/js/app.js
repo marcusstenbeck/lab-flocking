@@ -1,7 +1,9 @@
 require([
 ], function (
 ) {
-	var clearColor = '#004';
+	// Create app namespace
+	var app = app || {};
+	window.app = app;
 
 	/**
 	 *  SpriteRec class
@@ -49,9 +51,9 @@ require([
 
 	function DrawSprite(sp) {
 		app.ctx.fillStyle = 'transparent';
-		app.ctx.strokeStyle = '#ff0';
+		app.ctx.strokeStyle = '#D6A692';
 		app.ctx.beginPath();
-		app.ctx.arc(sp.position.x, sp.position.y, 10, sp.rotation, sp.rotation + 2*Math.PI);
+		app.ctx.arc(sp.position.x, sp.position.y, 5, sp.rotation, sp.rotation + 2*Math.PI);
 		app.ctx.lineTo(sp.position.x, sp.position.y);
 		app.ctx.closePath();
 		app.ctx.stroke();
@@ -72,13 +74,11 @@ require([
 			rotation: 0
 		});
 
-		console.log('created new sprite', sp);
-
 		return sp;
 	}
 
 	function DrawBackground() {
-		app.ctx.fillStyle = clearColor;
+		app.ctx.fillStyle = app.CLEAR_COLOR_FILL;
 		app.ctx.fillRect(0, 0, app.canv.width, app.canv.height);
 	}
 
@@ -87,16 +87,49 @@ require([
 		// koden i övrigt, men mycket kan samlas här. Du kan utgå från den
 		// globala listroten, gSpriteRoot, för att kontrollera alla sprites
 		// hastigheter och positioner, eller arbeta från egna globaler.
+
+		// calculate stuff
+		for(var i = 0; i < app.spriteList.length; i++) {
+			var count = 0;
+			var currentSprite = app.spriteList[i];
+			app.averagePosition[i] = { x: 0, y: 0 };
+
+			for(var j = 0; j < app.spriteList.length; j++) {
+				var dist = {
+					x: app.spriteList[j].position.x - currentSprite.position.x,
+					y: app.spriteList[j].position.y - currentSprite.position.y
+				};
+
+				var distSquared = dist.x * dist.x + dist.y * dist.y;
+
+				if(distSquared < app.FLOCK_MAX_DISTANCE_SQUARED) {
+					app.averagePosition[i].x += dist.x;
+					app.averagePosition[i].y += dist.y;
+					count++;
+				}
+			}
+
+			if(count > 0) {
+				app.averagePosition[i].x /= count;
+				app.averagePosition[i].y /= count;
+			}
+		}
+
+		var cohesionWeight = 0.001;
+		// apply the stuff calculated above
+		for(var i = 0; i < app.spriteList.length; i++) {
+			app.spriteList[i].speed.x += app.averagePosition[i].x * cohesionWeight;
+			app.spriteList[i].speed.y += app.averagePosition[i].y * cohesionWeight;
+
+			app.spriteList[i].position.x += app.spriteList[i].speed.x;
+			app.spriteList[i].position.y += app.spriteList[i].speed.y;
+		}
 	}
 
 
 	/**
 	 *  Loop-based app structure
 	 */
-
-	// Create app namespace
-	var app = app || {};
-	window.app = app;
 
 	function draw() {
 		DrawBackground();
@@ -135,6 +168,8 @@ require([
 		app.canv.style.setProperty('height', '100%');
 		app.ctx = app.canv.getContext('2d');
 
+		app.CLEAR_COLOR_FILL = '#292522';
+
 		/**
 		 *  Load texture data
 		 */
@@ -146,13 +181,22 @@ require([
 		// dogFace = GetFace("bilder/dog.tga"); // En hund
 		// foodFace = GetFace("bilder/mat.tga"); // Mat
 
+		app.FLOCK_SIZE = 50;
+		app.FLOCK_MAX_DISTANCE_SQUARED = app.canv.width*app.canv.width / 16;
+		app.averagePosition = new Array(app.FLOCK_SIZE);
+
 		/**
 		 *  Create sprites
 		 */
-		app.spriteList = [];
-		app.spriteList.push(NewSprite(sheepFace, 100, 200, 1, 1));
-		app.spriteList.push(NewSprite(sheepFace, 200, 100, 1.5, -1));
-		app.spriteList.push(NewSprite(sheepFace, 250, 200, -1, 1.5));
+		app.spriteList = new Array(app.FLOCK_SIZE);
+		for (var i = 0; i < app.spriteList.length; i++) {
+			app.spriteList[i] = NewSprite(
+									sheepFace,  // graphics
+									Math.random() * app.canv.width,  // x position
+									Math.random() * app.canv.height,  // y position
+									Math.random() * 2 - 1,  // x speed
+									Math.random() * 2 - 1);  // y speed
+		};
 	}
 
 	init();

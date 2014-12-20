@@ -1,9 +1,20 @@
 require([
-	'lib/SpriteRec'
 ], function (
-	SpriteRec
 ) {
 	var clearColor = '#004';
+
+	/**
+	 *  SpriteRec class
+	 */
+	function SpriteRec(options) {
+		options = options || {};
+		
+		this.position = options.position || { x:0, y:0 };
+		this.speed = options.speed || { x:0, y:0 };
+
+		this.rotation = options.rotation || 0;
+		this.face = options.face || '';
+	}
 
 	/**
 	 *  Original lab-like functions

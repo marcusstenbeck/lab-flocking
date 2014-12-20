@@ -10,7 +10,7 @@ define([], function () {
 		this.speed.y = options.speed.y || 0;
 
 		this.rotation = options.rotation || 0;
-		this.textureData = options.textureData || '';
+		this.face = options.face || '';
 	};
 
 	return SpriteRec;

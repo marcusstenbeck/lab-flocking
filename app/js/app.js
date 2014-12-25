@@ -243,6 +243,7 @@ function init() {
 	app.gui.add(app, 'FLOCK_COHESION_WEIGHT', 0.0001, 0.05);
 	app.gui.add(app, 'FLOCK_AVOIDANCE_WEIGHT', 0.0001, 20.0);
 	app.gui.add(app, 'FLOCK_ALIGNMENT_WEIGHT', 0.0001, 1.0);
+	app.gui.add(app, 'FLOCK_MAX_DISTANCE_SQUARED');
 	app.gui.add(app, 'restart');
 	app.gui.close();
 }

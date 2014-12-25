@@ -205,11 +205,11 @@ function init() {
 	// dogFace = GetFace("bilder/dog.tga"); // En hund
 	// foodFace = GetFace("bilder/mat.tga"); // Mat
 
-	app.FLOCK_SIZE = 50;
-	app.FLOCK_MAX_DISTANCE_SQUARED = app.canv.width*app.canv.width / 16;
-	app.FLOCK_COHESION_WEIGHT = 0.008;
-	app.FLOCK_AVOIDANCE_WEIGHT = 20;
-	app.FLOCK_ALIGNMENT_WEIGHT = 0.1;
+	app.FLOCK_SIZE = 250;
+	app.FLOCK_MAX_DISTANCE_SQUARED = 3000;
+	app.FLOCK_COHESION_WEIGHT = 0.0065;
+	app.FLOCK_AVOIDANCE_WEIGHT = 10;
+	app.FLOCK_ALIGNMENT_WEIGHT = 0.03;
 
 	app.averagePosition = new Array(app.FLOCK_SIZE);
 	app.avoidanceVector = new Array(app.FLOCK_SIZE);

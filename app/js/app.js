@@ -13,6 +13,9 @@ function SpriteRec(options) {
 
 	this.rotation = options.rotation || 0;
 	this.face = options.face || '';
+
+	this.care = options.care || 1;
+	this.sight = options.sight || 1;
 }
 
 /**
@@ -57,7 +60,7 @@ function DrawSprite(sp) {
 	app.ctx.stroke();
 }
 
-function NewSprite(face, xPos, yPos, xVel, yVel) {
+function NewSprite(face, xPos, yPos, xVel, yVel, care, sight) {
 
 	var sp = new SpriteRec({
 		position: {
@@ -69,7 +72,9 @@ function NewSprite(face, xPos, yPos, xVel, yVel) {
 			y: yVel
 		},
 		face: face,
-		rotation: 0
+		rotation: 0,
+		care: care,
+		sight: sight
 	});
 
 	return sp;
@@ -102,7 +107,7 @@ function SpriteBehavior() {
 
 			var distSquared = dist.x * dist.x + dist.y * dist.y;
 
-			if(distSquared < app.FLOCK_MAX_DISTANCE_SQUARED) {
+			if(distSquared < (app.FLOCK_MAX_DISTANCE_SQUARED * currentSprite.sight)) {
 				app.averagePosition[i].x += dist.x;
 				app.averagePosition[i].y += dist.y;
 
@@ -114,6 +119,7 @@ function SpriteBehavior() {
 
 				count++;
 			}
+
 		}
 
 		if(count > 0) {
@@ -133,14 +139,14 @@ function SpriteBehavior() {
 
 		app.spriteList[i].speed.x += app.averagePosition[i].x * app.FLOCK_COHESION_WEIGHT
 									+ app.avoidanceVector[i].x * app.FLOCK_AVOIDANCE_WEIGHT
-									+ app.speedDifference[i].x * app.FLOCK_ALIGNMENT_WEIGHT;
+									+ app.speedDifference[i].x * app.FLOCK_ALIGNMENT_WEIGHT * app.spriteList[i].care;
 
 		app.spriteList[i].speed.y += app.averagePosition[i].y * app.FLOCK_COHESION_WEIGHT
 									+ app.avoidanceVector[i].y * app.FLOCK_AVOIDANCE_WEIGHT
-									+ app.speedDifference[i].y * app.FLOCK_ALIGNMENT_WEIGHT;
+									+ app.speedDifference[i].y * app.FLOCK_ALIGNMENT_WEIGHT * app.spriteList[i].care;
 
-		app.spriteList[i].position.x += app.spriteList[i].speed.x;
-		app.spriteList[i].position.y += app.spriteList[i].speed.y;
+		app.spriteList[i].position.x += app.spriteList[i].speed.x * (Math.random() * 0.002 + 1);
+		app.spriteList[i].position.y += app.spriteList[i].speed.y * (Math.random() * 0.002 + 1);
 	}
 }
 
@@ -215,12 +221,17 @@ function init() {
 		 */
 		app.spriteList = new Array(app.FLOCK_SIZE);
 		for (var i = 0; i < app.spriteList.length; i++) {
+			var care = Math.random()*4;
+			var sight = Math.random() * 0.6 + 0.7;
 			app.spriteList[i] = NewSprite(
 									null,  // graphics
 									Math.random() * app.canv.width,  // x position
 									Math.random() * app.canv.height,  // y position
 									Math.random() * 2 - 1,  // x speed
-									Math.random() * 2 - 1);  // y speed
+									Math.random() * 2 - 1,  // y speed
+									care,  // care
+									sight  // sight
+								);
 		};
 	};
 	app.restart();

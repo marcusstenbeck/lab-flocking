@@ -123,7 +123,28 @@ function SpriteBehavior() {
 				count++;
 			}
 
+			// Check where mouse is
+			var distToMouse = {
+				x: app.mouse.x - currentSprite.position.x,
+				y: app.mouse.y - currentSprite.position.y
+			};
+
+			var distSquared = distToMouse.x * distToMouse.x + distToMouse.y * distToMouse.y;
+
+			if(distSquared < (4 * app.FLOCK_MAX_DISTANCE_SQUARED * currentSprite.sight)) {
+				if(app.mouse.button1) {
+					app.avoidanceVector[i].x -= distToMouse.x / (distSquared == 0 ? 0.00001 : distSquared*4);
+					app.avoidanceVector[i].y -= distToMouse.y / (distSquared == 0 ? 0.00001 : distSquared*4);
+				} else {
+					app.avoidanceVector[i].x += distToMouse.x / (distSquared < 0.01 ? 0.01 : distSquared*16);
+					app.avoidanceVector[i].y += distToMouse.y / (distSquared < 0.01 ? 0.01 : distSquared*16);
+				}
+				count++;
+			}
 		}
+
+
+
 
 		if(count > 0) {
 			app.averagePosition[i].x /= count;
@@ -153,15 +174,28 @@ function SpriteBehavior() {
 	}
 }
 
+function DrawMouse() {
+	if(app.mouse.button1) {
+		app.ctx.strokeStyle = '#660000';
+	} else {
+		app.ctx.strokeStyle = '#006600';
+	}
+
+	app.ctx.beginPath();
+	app.ctx.arc(app.mouse.x, app.mouse.y, Math.sqrt(2*app.FLOCK_MAX_DISTANCE_SQUARED), 0, 2*Math.PI, false);
+	app.ctx.stroke();
+}
 
 /**
  *  Loop-based app structure
  */
 
 function draw() {
-	DrawBackground();
+	DrawBackground('rgba(0,0,30,0.1)');
 	
 	SpriteBehavior(); // Din kod!
+
+	DrawMouse();
 	
 	/** 
 	 *  Loop though all sprites. (Several loops in real engine.)
@@ -196,6 +230,44 @@ function init() {
 	app.ctx = app.canv.getContext('2d');
 
 	app.CLEAR_COLOR_FILL = '#1F0310';
+
+	app.mouse = {
+		x:0,
+		y:0,
+		button1: 0,
+		button2: 0,
+		button3: 0
+	};
+	window.addEventListener('mousemove', function(evt) {
+		app.mouse.x = evt.clientX;
+		app.mouse.y = evt.clientY;
+	});
+	window.addEventListener('mousedown', function(evt) {
+		switch(evt.which) {
+			case 1:
+				app.mouse.button1 = 1;
+				break;
+			case 2:
+				app.mouse.button2 = 1;
+				break;
+			case 3:
+				app.mouse.button3 = 1;
+				break;
+		}
+	});
+	window.addEventListener('mouseup', function(evt) {
+		switch(evt.which) {
+			case 1:
+				app.mouse.button1 = 0;
+				break;
+			case 2:
+				app.mouse.button2 = 0;
+				break;
+			case 3:
+				app.mouse.button3 = 0;
+				break;
+		}
+	});
 
 	/**
 	 *  Load texture data

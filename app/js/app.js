@@ -12,7 +12,7 @@ function SpriteRec(options) {
 	this.speed = options.speed || { x:0, y:0 };
 
 	this.rotation = options.rotation || 0;
-	this.face = options.face || '';
+	this.color = options.color || 'rgb(' + Math.floor(256*Math.random()) + ', ' + Math.floor(256*Math.random()) + ', ' + Math.floor(256*Math.random()) + ')';
 
 	this.care = options.care || 1;
 	this.sight = options.sight || 1;
@@ -51,11 +51,14 @@ function HandleSprite(sp) {
 
 function DrawSprite(sp) {
 	// such render. many skill. wow.
+	var size = 3;
 	app.ctx.fillStyle = 'transparent';
-	app.ctx.strokeStyle = '#A3D95B';
+	app.ctx.strokeStyle = sp.color;
 	app.ctx.beginPath();
-	app.ctx.arc(sp.position.x, sp.position.y, 5, sp.rotation, sp.rotation + 2*Math.PI);
+	app.ctx.moveTo(sp.position.x + Math.cos(sp.rotation)*size, sp.position.y + Math.sin(sp.rotation)*size);
+	app.ctx.lineTo(sp.position.x + Math.cos(7*Math.PI/8 + sp.rotation)*size, sp.position.y + Math.sin(7*Math.PI/8 + sp.rotation)*size);
 	app.ctx.lineTo(sp.position.x, sp.position.y);
+	app.ctx.lineTo(sp.position.x + Math.cos(-7*Math.PI/8 + sp.rotation)*size, sp.position.y + Math.sin(-7*Math.PI/8 + sp.rotation)*size);
 	app.ctx.closePath();
 	app.ctx.stroke();
 }

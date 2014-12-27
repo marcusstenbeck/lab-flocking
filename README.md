@@ -77,6 +77,8 @@ Jag upptäckte att ett för högt värde av alignment resulterade i att individe
 
 Jag införde inte ett "svart får", utan jag införde olika grad av personlighet till varje individ i flocken. Istället införde jag två variabler för varje individ som påverkar beteendet. `care` justerar hur stor inverkan alignment har, alltså hur mycket individen "bryr sig om" vart de andra är på väg. `sight` påverkar hur långt individen "kan se". Dessa variationer, samt justering av cohesion, avoidance och alignment producerar till slut en mycket intressant simulering.
 
+Utöver dessa personlighetsdrag så kan man se på [rad 172 i app.js](https://github.com/marcusstenbeck/lab-flocking/blob/master/app/js/app.js#L172) att jag inför en slumpmässig variation i hur mycket individen förflyttar sig i sin hastighet.
+
 Jag ska inte sticka under stolen med att jag har suttit många minuter i sträck och beundrat beteendet i detta "akvarium".
 
 ```
